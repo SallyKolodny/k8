@@ -1,0 +1,39 @@
+#!/bin/bash
+#
+#
+cat <<EOF | kubectl apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: p2poolqa-deployment
+spec:
+  selector:
+    matchLabels:
+      app: p2poolqa
+  replicas: 2 
+  template:
+    metadata:
+      labels:
+        app: p2poolqa
+    spec:
+      containers:
+      - name: p2poolqa
+        image: SallyKolodny/db4e:p2poolqa
+        ports:
+        - containerPort: 3335      
+EOF
+
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Service
+metadata:
+  name: p2poolqa-service
+spec:
+  selector: 
+    app: p2poolqa
+  type: NodePort  
+  ports:
+    - port: 3335
+      targetPort: 3335
+      nodePort: 30035
+EOF
